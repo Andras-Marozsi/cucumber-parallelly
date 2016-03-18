@@ -1,0 +1,24 @@
+{
+  "name": "cucumber-parallelly",
+  "version": "0.1.0",
+  "description": "Run cucumber tests parallelly",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andras-Marozsi/cucumber-parallelly.git"
+  },
+  "keywords": [
+    "cucumber",
+    "parallel"
+  ],
+  "author": "Andras Marozsi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Andras-Marozsi/cucumber-parallelly/issues"
+  },
+  "devDependencies": {
+    "cucumber": "0.9.2",
+    "fs": "0.0.2",
+    "yargs": "4.2.0"
+  },
+  "homepage": "https://github.com/Andras-Marozsi/cucumber-parallelly#readme"
+}
