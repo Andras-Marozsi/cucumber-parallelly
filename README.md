@@ -96,7 +96,7 @@ $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --verbose true
 
 #### --config (or -c)
 
-Path to the configuration file if there is any. Default location: `"./pc_config.js"`
+Path to the configuration file if there is any. Default location: `"./cp_config.js"`
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --confing "./pc_config.js"
