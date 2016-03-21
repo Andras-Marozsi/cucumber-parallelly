@@ -86,6 +86,14 @@ $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --silent false
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -s true
 ```
 
+#### --verbose
+
+Boolean value to show the configuration used for the execution, by default: `false`.
+
+``` shell
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --verbose true
+```
+
 #### --config (or -c)
 
 Path to the configuration file if there is any. Default location: `"./pc_config.js"`
