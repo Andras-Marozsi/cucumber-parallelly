@@ -130,7 +130,7 @@ There is a good chance that the tests need some configuration from the environme
 
 ##### Example configuration
 
-``` json
+``` js
 var
   date = new Date(),
   timeStamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "_" + date.getHours()
