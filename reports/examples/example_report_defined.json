@@ -1,0 +1,67 @@
+[
+  {
+    "id": "Example Report with undefined steps",
+    "name": "Example Report with undefined steps",
+    "description": "",
+    "line": 2,
+    "keyword": "Feature",
+    "uri": "/Users/example/Documents/autotests/features/e2e/temp.feature",
+    "elements": [
+      {
+        "name": "Appearance of \"Element\" metabox when something",
+        "id": "Appearance-of-\"Element\"-metabox-when-something",
+        "line": 36,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Before ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 545433584
+            },
+            "match": {}
+          },
+          {
+            "name": "the page does not yet have an Element selected",
+            "line": 37,
+            "keyword": "Given ",
+            "result": {
+              "status": "failed"
+            },
+            "match": {}
+          },
+          {
+            "name": "the Element metabox is in view",
+            "line": 38,
+            "keyword": "When ",
+            "result": {
+              "status": "skipped"
+            },
+            "match": {}
+          },
+          {
+            "name": "I should see the \"no selected element\" metabox",
+            "line": 39,
+            "keyword": "Then ",
+            "result": {
+              "status": "skipped"
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 89929912
+            },
+            "match": {}
+          }
+        ]
+      }
+    ]
+  }
+]
