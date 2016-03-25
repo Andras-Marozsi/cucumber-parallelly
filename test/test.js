@@ -1,5 +1,6 @@
 var
   helper = require('../lib/cucumber-parallelly/helper.js'),
+  reportCreator = require('../lib/cucumber-parallelly/report_creator.js'),
   assert = require('assert'),
   fs = require('fs'),
   path = require('path'),
@@ -12,8 +13,15 @@ var
   createFolderStructure_test_string1 = './reports/tmp/1/2/3/4/5/temp.feature_12.json',
 
   hadUndefinedStep_test_file_path1 = './reports/examples/example_report_defined.json',
-  hadUndefinedStep_test_file_path2 = './reports/examples/example_report_undefined.json';
+  hadUndefinedStep_test_file_path2 = './reports/examples/example_report_undefined.json',
 
+  reportCreator_reportFile = './reports/report.json',
+  extendReport_report_a = './reports/examples/example_report_for_adding_a.json',
+  extendReport_report_b = './reports/examples/example_report_for_adding_b.json',
+  extendReport_report_c = './reports/examples/example_report_for_adding_c.json',
+  extendReport_report_ab = './reports/examples/example_report_for_adding_ab.json',
+  extendReport_report_ac = './reports/examples/example_report_for_adding_ac.json',
+  extendReport_report_abc = './reports/examples/example_report_for_adding_abc.json';
 
 describe('lib/cucumber-parallelly/helper.js', function () {
 
@@ -131,4 +139,64 @@ describe('lib/cucumber-parallelly/helper.js', function () {
       assert.equal('initial_value', process.env.NO_SUCH_VAR0102);
     });
   });
+});
+
+describe('lib/cucumber-parallelly/report_creator.js', function () {
+
+  describe('init', function () {
+    it("should be able create and add '[' to report file: '" + reportCreator_reportFile + "'", function () {
+      reportCreator.init(reportCreator_reportFile);
+      assert.equal('[', fs.readFileSync(reportCreator_reportFile));
+    });
+  });
+
+  describe('writeReport', function () {
+    it("should be able to write report file: '" + reportCreator_reportFile + "' with any string", function () {
+      var testValue = 'writeReportTest1';
+      reportCreator.writeReport(testValue);
+      assert.equal(testValue, fs.readFileSync(reportCreator_reportFile));
+    });
+    it("should be able to write report file: '" + reportCreator_reportFile + "' with stringified json", function () {
+      var inputValue = fs.readFileSync(extendReport_report_a, 'utf8');
+      reportCreator.writeReport(inputValue);
+      assert.equal(inputValue, fs.readFileSync(reportCreator_reportFile, 'utf8'));
+    });
+  });
+
+  describe('extendReport', function () {
+    it("should be able to append 'a' and 'b' reports", function () {
+      reportCreator.init(reportCreator_reportFile);
+      reportCreator.extendReport(extendReport_report_a);
+      reportCreator.extendReport(extendReport_report_b);
+      reportCreator.finalizeReport();
+      assert.equal(fs.readFileSync(extendReport_report_ab, 'utf8').replace(/\s/g, ''),
+        fs.readFileSync(reportCreator_reportFile, 'utf8').replace(/\s/g, ''));
+    });
+    it("should be able to append 'a' and 'c' reports", function () {
+      reportCreator.init(reportCreator_reportFile);
+      reportCreator.extendReport(extendReport_report_a);
+      reportCreator.extendReport(extendReport_report_c);
+      reportCreator.finalizeReport();
+      assert.equal(fs.readFileSync(extendReport_report_ac, 'utf8').replace(/\s/g, ''),
+        fs.readFileSync(reportCreator_reportFile, 'utf8').replace(/\s/g, ''));
+    });
+    it("should be able to append 'a', 'b' and 'c' reports", function () {
+      reportCreator.init(reportCreator_reportFile);
+      reportCreator.extendReport(extendReport_report_a);
+      reportCreator.extendReport(extendReport_report_b);
+      reportCreator.extendReport(extendReport_report_c);
+      reportCreator.finalizeReport();
+      assert.equal(fs.readFileSync(extendReport_report_abc, 'utf8').replace(/\s/g, ''),
+        fs.readFileSync(reportCreator_reportFile, 'utf8').replace(/\s/g, ''));
+    });
+  });
+
+  describe('finalizeReport', function () {
+    it("should put a ']' to report file: '" + reportCreator_reportFile + "'", function () {
+      reportCreator.writeReport('');
+      reportCreator.finalizeReport();
+      assert.equal(']', fs.readFileSync(reportCreator_reportFile));
+    });
+  });
+
 });

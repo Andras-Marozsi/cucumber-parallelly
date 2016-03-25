@@ -1,0 +1,23 @@
+[
+  {
+    "id": "testId1",
+    "name": "testName1",
+    "elements": [
+      {
+        "testA": "valA"
+      },
+      {
+        "testB": "valB"
+      }
+    ]
+  },
+  {
+    "id": "testId2",
+    "name": "testName2",
+    "elements": [
+      {
+        "testC": "valC"
+      }
+    ]
+  }
+]
