@@ -1,5 +1,7 @@
 # cucumber-parallelly
 
+[![Build Status](https://api.travis-ci.org/Andras-Marozsi/cucumber-parallelly.png?branch=master)](https://travis-ci.org/Andras-Marozsi/cucumber-parallelly)
+
 ## Usage
 
 ### Setup

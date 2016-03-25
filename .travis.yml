@@ -5,4 +5,8 @@ node_js:
 
 branches:
   only:
-    - adding_tests
+    - master
+
+notifications:
+  email:
+    - marozsiandras@gmail.com
