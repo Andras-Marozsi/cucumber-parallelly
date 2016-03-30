@@ -106,6 +106,16 @@ $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --confing "./pc_
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -c ./pc_config.js
 ```
 
+#### --env (or -e)
+
+The provided key=value pair will be set as environment variable. The values here overwrite the ones in the configuration file'.
+
+``` shell
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --env ENVIRONMENT=dev
+// or 
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -e ENVRIONMENT=dev -e 'ENV_NAME=custom value'
+```
+
 #### Configuration file
 
 All the above can be set in the configuration file, but there are a couple more settings there.
