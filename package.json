@@ -19,10 +19,12 @@
     "test": "node node_modules/mocha/bin/mocha test"
   },
   "devDependencies": {
-    "cucumber": "0.9.2",
     "fs": "0.0.2",
     "mocha": "^2.4.5",
     "yargs": "4.2.0"
+  },
+  "dependencies": {
+    "cucumber": "0.9.2"
   },
   "homepage": "https://github.com/Andras-Marozsi/cucumber-parallelly#readme"
 }
