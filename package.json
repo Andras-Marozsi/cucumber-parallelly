@@ -1,6 +1,6 @@
 {
   "name": "cucumber-parallelly",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Run cucumber tests parallelly",
   "repository": {
     "type": "git",
