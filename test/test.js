@@ -56,6 +56,15 @@ describe('lib/cucumber-parallelly/helper.js', function () {
   });
 
   describe('getScenarios', function () {
+    it("should not return scenarios if features path does not contain features", function () {
+      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./lib']), []);
+    })
+    it("should return all scenarios from a specific feature path", function () {
+      var expectedArray = [
+        path.join(path.resolve('./test/features'), 'example3.feature:11')
+      ]
+      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./test/features']), expectedArray);
+    })
     it("should return all scenarios for empty array of tags", function () {
       var expectedArray = [
         path.join(path.resolve('./features'), 'example1.feature:11'),

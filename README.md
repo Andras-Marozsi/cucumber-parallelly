@@ -29,13 +29,13 @@ then install with:
 ``` shell
 $ npm install --dev
 ```
- 
-### Run 
- 
+
+### Run
+
 cucumber-parallelly can be ran from a terminal as follows:
 
 ``` shell
-$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly 
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly
 ```
 
 By default cucumber-parallelly will look for features files under a directory called `./features`
@@ -54,7 +54,7 @@ Defines the tags to use for the test execution. Default value is none: `""`.
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --tags "@acceptance ~@wip"
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -t "@acceptance,@mobile ~@wip"
 ```
 
@@ -64,7 +64,7 @@ Defines the number of parallel threads the test will use for execution. Default 
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --threads 2
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -p 3
 ```
 
@@ -74,7 +74,7 @@ Defines the number of times a failed test will be attempted to rerun. Default va
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --retrires 2
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -r 1
 ```
 
@@ -84,7 +84,7 @@ Boolean value to show logs of the individual threads or suppress them, by defaul
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --silent false
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -s true
 ```
 
@@ -102,7 +102,7 @@ Path to the configuration file if there is any. Default location: `"./cp_config.
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --confing "./pc_config.js"
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -c ./pc_config.js
 ```
 
@@ -112,9 +112,21 @@ The provided key=value pair will be set as environment variable. The values here
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --env ENVIRONMENT=dev
-// or 
+// or
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -e ENVRIONMENT=dev -e 'ENV_NAME=custom value'
 ```
+
+#### --features (or -f)
+
+Path to the features path. Default `"./features"`. This values can be overwrite into configuration file (see section for the `-c` option.
+
+``` shell
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly --features ./test/features
+// or
+$ node node_modules/cucumber-parallelly/lib/cucumber-parallelly -f ./test/features
+```
+
+
 
 #### Configuration file
 
@@ -124,12 +136,16 @@ If something (like threads) is set in both the configuration file and via argume
 ##### weightingTags
 
 This is optional.
-Can determine the order in which the tests will be executed. This can significantly decrease the duration of the test running. 
+Can determine the order in which the tests will be executed. This can significantly decrease the duration of the test running.
 From the example under: tests with tag @duration_XL will be the first one to start, and the ones with @duration_XS will be the last. By default every test which doesn't have any special tag will be executed in an alphabetical order.
 
 ##### cucumberPath
 
 The path to the cucumber executable. By default it is in the node_modules folder, but can be set to global ("cucumber") as well, or any special location.
+
+##### featuresPaths
+
+The path to the features to be executed. By default it is in the folder `features`. The value can be a array to set multiple features paths.
 
 ##### cucumberOpts
 
@@ -160,6 +176,7 @@ module.exports = {
   name: "Basic configuration for cucumber-parallelly",
   reportPath: './reports/report.json',
   tempReportPath: './reports/tmp/',
+  featuresPaths: ['./test/features1', './test/features2'],
   weightingTags: {
     pattern: '@duration_',
     default: 25,
