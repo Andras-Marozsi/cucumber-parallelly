@@ -14,6 +14,7 @@ var
 
   hadUndefinedStep_test_file_path1 = './reports/examples/example_report_defined.json',
   hadUndefinedStep_test_file_path2 = './reports/examples/example_report_undefined.json',
+  empty_reportFile = './reports/examples/example_report_empty.json',
 
   reportCreator_reportFile = './reports/report.json',
   extendReport_report_a = './reports/examples/example_report_for_adding_a.json',
@@ -21,7 +22,8 @@ var
   extendReport_report_c = './reports/examples/example_report_for_adding_c.json',
   extendReport_report_ab = './reports/examples/example_report_for_adding_ab.json',
   extendReport_report_ac = './reports/examples/example_report_for_adding_ac.json',
-  extendReport_report_abc = './reports/examples/example_report_for_adding_abc.json';
+  extendReport_report_abc = './reports/examples/example_report_for_adding_abc.json',
+  extendReport_empty_valid = './reports/examples/example_report_empty_valid.json';
 
 describe('lib/cucumber-parallelly/helper.js', function () {
 
@@ -53,18 +55,21 @@ describe('lib/cucumber-parallelly/helper.js', function () {
     it("should return true for test report file: '" + hadUndefinedStep_test_file_path2 + "'", function () {
       assert.equal(true, helper.hadUndefinedStep(hadUndefinedStep_test_file_path2));
     });
+    it("should return false for test empty report file: '" + empty_reportFile + "'", function () {
+      assert.equal(false, helper.hadUndefinedStep(empty_reportFile));
+    });
   });
 
   describe('getScenarios', function () {
     it("should not return scenarios if features path does not contain features", function () {
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./lib']), []);
-    })
+      assert.deepEqual(helper.getScenarios([], {pattern: '', default: 1}, ['./lib']), []);
+    });
     it("should return all scenarios from a specific feature path", function () {
       var expectedArray = [
         path.join(path.resolve('./test/features'), 'example3.feature:11')
-      ]
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./test/features']), expectedArray);
-    })
+      ];
+      assert.deepEqual(helper.getScenarios([], {pattern: '', default: 1}, ['./test/features']), expectedArray);
+    });
     it("should return all scenarios for empty array of tags", function () {
       var expectedArray = [
         path.join(path.resolve('./features'), 'example1.feature:11'),
@@ -78,7 +83,7 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), 'example2.feature:12'),
         path.join(path.resolve('./features'), 'example2.feature:15')
       ];
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}), expectedArray);
+      assert.deepEqual(helper.getScenarios([], {pattern: '', default: 1}), expectedArray);
     });
     it("should return all scenarios for tag '@all'", function () {
       var expectedArray = [
@@ -93,7 +98,7 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), '/example2.feature:12'),
         path.join(path.resolve('./features'), '/example2.feature:15')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@all']}, {pattern: '', default: 1}), expectedArray);
+      assert.deepEqual(helper.getScenarios(['@all'], {pattern: '', default: 1}), expectedArray);
     });
     it("should return a subset of scenarios for tag '@evens'", function () {
       var expectedArray = [
@@ -104,14 +109,14 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), '/example1.feature:37'),
         path.join(path.resolve('./features'), '/example2.feature:15')
       ];
-      assert.deepEqual(expectedArray, helper.getScenarios({tags: ['@evens']}, {pattern: '', default: 1}));
+      assert.deepEqual(expectedArray, helper.getScenarios(['@evens'], {pattern: '', default: 1}));
     });
     it("should return a subset of scenarios for tag '@scenario2 @acceptance'", function () {
       var expectedArray = [
         path.join(path.resolve('./features'), '/example1.feature:21'),
         path.join(path.resolve('./features'), '/example1.feature:22')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@evens', "@acceptance"]}, {
+      assert.deepEqual(helper.getScenarios(['@evens', "@acceptance"], {
         pattern: '',
         default: 1
       }), expectedArray);
@@ -121,13 +126,13 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), '/example1.feature:21'),
         path.join(path.resolve('./features'), '/example1.feature:22')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@scenario2', "~@regression"]}, {
+      assert.deepEqual(helper.getScenarios(['@scenario2', "~@regression"], {
         pattern: '',
         default: 1
       }), expectedArray);
     });
     it("should return no scenarios for tag 'all'", function () {
-      assert.deepEqual(helper.getScenarios({tags: ['all']}, {pattern: '', default: 1}), []);
+      assert.deepEqual(helper.getScenarios(['all'], {pattern: '', default: 1}), []);
     });
   });
 
@@ -196,6 +201,13 @@ describe('lib/cucumber-parallelly/report_creator.js', function () {
       reportCreator.extendReport(extendReport_report_c);
       reportCreator.finalizeReport();
       assert.equal(fs.readFileSync(extendReport_report_abc, 'utf8').replace(/\s/g, ''),
+        fs.readFileSync(reportCreator_reportFile, 'utf8').replace(/\s/g, ''));
+    });
+    it("should be able to handle empty report file", function () {
+      reportCreator.init(reportCreator_reportFile);
+      reportCreator.extendReport(empty_reportFile);
+      reportCreator.finalizeReport();
+      assert.equal(fs.readFileSync(extendReport_empty_valid, 'utf8').replace(/\s/g, ''),
         fs.readFileSync(reportCreator_reportFile, 'utf8').replace(/\s/g, ''));
     });
   });
