@@ -1,6 +1,7 @@
 {
   "name": "cucumber-parallelly",
   "version": "0.4.0",
+  "main": "./build/cucumber-parallelly.js",
   "description": "Run cucumber tests parallelly",
   "repository": {
     "type": "git",
@@ -16,7 +17,8 @@
     "url": "https://github.com/Andras-Marozsi/cucumber-parallelly/issues"
   },
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha test"
+    "test": "node node_modules/mocha/bin/mocha test",
+    "build": "node ./node_modules/.bin/babel src -d lib"
   },
   "dependencies": {
     "cucumber": "3.1.0",
@@ -24,5 +26,8 @@
     "mocha": "^2.4.5",
     "yargs": "4.2.0"
   },
-  "homepage": "https://github.com/Andras-Marozsi/cucumber-parallelly#readme"
+  "homepage": "https://github.com/Andras-Marozsi/cucumber-parallelly#readme",
+  "devDependencies": {
+    "babel-cli": "6.26.0"
+  }
 }

@@ -1,8 +1,9 @@
 "use strict";
 
-var fs = require('fs'),
-    pathHelper = require('path'),
-    pathSeparator = pathHelper.sep;
+var
+  fs = require('fs'),
+  pathHelper = require('path'),
+  pathSeparator = pathHelper.sep;
 
 const { PickleFilter, getTestCasesFromFilesystem } = require('cucumber');
 const { EventEmitter } = require('events');
@@ -18,15 +19,15 @@ class Helper {
    * @param path The path of the report file for the given scenario
    * @returns {Number} Returns the retry count for the scenario
    */
-  static getRetryCountFromPath(path) {
-    return parseInt(path.replace('.json', '').substr(path.length - 6));
+  static getRetryCountFromPath (path) {
+    return parseInt(path.replace('.json', '').substr(path.length - 6))
   }
 
   /**
    * Create the folder structure for the provided path
    * @param completePath The complete path of the file (can be just the folder structure as well)
    */
-  static createFolderStructure(completePath) {
+  static createFolderStructure (completePath) {
     var path = '';
     completePath = pathHelper.normalize(completePath);
     completePath.split(pathSeparator).map(function (folder) {
@@ -43,55 +44,56 @@ class Helper {
         }
       }
     });
-  }
+  };
 
   /**
    * Based on the report returns true if the scenario had undefined step(s), or returns false otherwise
    * @param pathToReport The path to the report file to examine
    * @returns {boolean} True if there were undefined steps, false otherwise
    */
-  static hadUndefinedStep(pathToReport) {
+  static hadUndefinedStep (pathToReport) {
     var actualReport = JSON.parse(fs.readFileSync(pathToReport, 'utf8'))[0],
-        hasUndefinedStep = false;
+      hasUndefinedStep = false;
 
     if (actualReport && actualReport.elements && actualReport.elements[0]) {
       actualReport.elements[0].steps.map(function (step) {
-        hasUndefinedStep = step.result.status == 'undefined' ? true : hasUndefinedStep;
+        hasUndefinedStep = (step.result.status == 'undefined') ? true : hasUndefinedStep;
       });
     }
 
     return hasUndefinedStep;
-  }
+  };
 
   /**
    * Collects all scenarios to 'arrayOfScenarioPaths' variable, sorted by some special tags if they were provided
    */
-  static getScenarios(tagsToGet, weightingTags, fPaths = ['./features']) {
-    var allScenarios = [],
-        sortedScenarios = [],
-        tagExpression = '',
-        featuresPaths = [];
+  static getScenarios (tagsToGet, weightingTags, fPaths = ['./features']) {
+    var
+      allScenarios = [],
+      sortedScenarios = [],
+      tagExpression = '',
+      featuresPaths = [];
 
     [].concat(fPaths).map(function (path) {
       loadFeatureFilesFromDir(path);
     });
 
-    function loadFeatureFilesFromDir(path) {
+    function loadFeatureFilesFromDir (path) {
       fs.readdirSync(path).forEach(file => {
         if (fs.lstatSync(pathHelper.resolve(process.cwd(), path, file)).isDirectory()) {
-          loadFeatureFilesFromDir(pathHelper.resolve(process.cwd(), path, file));
+          loadFeatureFilesFromDir(pathHelper.resolve(process.cwd(), path, file))
         } else {
           if (pathHelper.extname(file) == '.feature') {
             featuresPaths.push(pathHelper.resolve(process.cwd(), path, file));
           }
         }
-      });
+      })
     }
 
     if (Array.isArray(tagsToGet.tags)) {
       tagsToGet.tags.map(function (tag, index) {
         if (index != 0) {
-          tagExpression += ' and ';
+          tagExpression += ' and '
         }
         if (tag.indexOf('~') == -1 && tag.indexOf(',') == -1) {
           tagExpression += tag;
@@ -102,12 +104,12 @@ class Helper {
         } else if (tag.indexOf('~') == -1 && tag.indexOf(',') != -1) {
           tagExpression += "(" + tag.replace(/,/g, ' or ') + ")";
         }
-      });
+      })
     } else {
       tagExpression = tagsToGet.tags;
     }
 
-    function getFeaturesByTagExpression() {
+    function getFeaturesByTagExpression () {
       return getTestCasesFromFilesystem({
         cwd: '',
         eventBroadcaster: eventBroadcaster,
@@ -122,7 +124,7 @@ class Helper {
 
         // Sort the scenarios by their size (can be defines by tag '@duration_'
         allScenarios.sort(function (scenario1, scenario2) {
-          return getScenarioSize(scenario2.pickle) - getScenarioSize(scenario1.pickle);
+          return getScenarioSize(scenario2.pickle) - getScenarioSize(scenario1.pickle)
         });
         // Create the array of (sorted) scenarios to execute
         allScenarios.map(function (scenario) {
@@ -135,7 +137,7 @@ class Helper {
       });
     }
 
-    function getScenarioSize(scenario) {
+    function getScenarioSize (scenario) {
       var size = weightingTags.default;
       scenario.tags.forEach(function (tag) {
         if (tag.name.indexOf(weightingTags.pattern) > -1) {
@@ -145,14 +147,14 @@ class Helper {
       return size;
     }
 
-    return getFeaturesByTagExpression();
+    return getFeaturesByTagExpression()
   }
 
   /**
    * Set the environment variables got in parameter if they are not yet set
    * @param varsToSet {object} Key value pair of environment variables and their values to set.
    */
-  static setEnvironmentVariables(varsToSet) {
+  static setEnvironmentVariables (varsToSet) {
     if (varsToSet != undefined) {
       Object.keys(varsToSet).map(function (varName) {
         process.env[varName] = process.env[varName] || varsToSet[varName];
