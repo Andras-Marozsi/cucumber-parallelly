@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Executes the cucumber scenarios on a pool of workers parallelly
  * @param config {Object} The config object for the execution containing:
@@ -15,37 +13,39 @@
  *   config.environment {Object} Key-value pair of environment variables to set, by default empty
  * @constructor
  */
-var ScenariosOnWorkerPool = function ScenariosOnWorkerPool(config) {
+var ScenariosOnWorkerPool = function (config) {
 
-  var maxWorkerCount = config.threads == undefined ? 5 : config.threads,
-      maxRetryCount = config.retries == undefined ? 0 : config.retries,
-      hideOutput = config.silent == undefined ? false : config.silent,
-      exec = require('child_process').exec,
-      fs = require('fs'),
-      REPORT_FILE = config.reportPath || './reports/report.json',
-      TEMP_REPORT_PATH = config.tempReportPath || './reports/tmp/',
-      RETRY_STR = '_RETRY_',
-      activeWorkers = 0,
-      allTests = 0,
-      failedTests = 0,
-      passedTests = 0,
-      tagsToGet = { tags: config.tags || [] },
-      arrayOfScenarioPaths = [],
-      testResults = {},
-      startTime,
-      helper = require('./helper.js'),
-      path = require('path'),
-      reportCreator = require('./report_creator.js'),
-      command = "node " + config.cucumberPath + " " + config.cucumberOpts;
+  var
+    maxWorkerCount = (config.threads == undefined) ? 5 : config.threads,
+    maxRetryCount = (config.retries == undefined) ? 0 : config.retries,
+    hideOutput = (config.silent == undefined) ? false : config.silent,
+    exec = require('child_process').exec,
+    fs = require('fs'),
+    REPORT_FILE = config.reportPath || './reports/report.json',
+    TEMP_REPORT_PATH = config.tempReportPath || './reports/tmp/',
+    RETRY_STR = '_RETRY_',
+    activeWorkers = 0,
+    allTests = 0,
+    failedTests = 0,
+    passedTests = 0,
+    tagsToGet = {tags: config.tags || []},
+    arrayOfScenarioPaths = [],
+    testResults = {},
+    startTime,
+    helper = require('./helper.js'),
+    path = require('path'),
+    reportCreator = require('./report_creator.js'),
+    command = "node " + config.cucumberPath + " " + config.cucumberOpts;
 
   /**
    * Starts to create threads to execute the scenarios. Every scenario runs in its own thread.
    */
-  function processScenarios() {
+  function processScenarios () {
     while (activeWorkers < maxWorkerCount && arrayOfScenarioPaths.length > 0) {
-      var scenario = arrayOfScenarioPaths.shift(),
-          tempReportFile = (TEMP_REPORT_PATH + scenario.replace(/.*\/features\//, '').replace(/:/g, '_').replace('.', '_') + ".json").replace(/\\/g, '/'),
-          execution;
+      var
+        scenario = arrayOfScenarioPaths.shift(),
+        tempReportFile = (TEMP_REPORT_PATH + scenario.replace(/.*\/features\//, '').replace(/:/g, '_').replace('.', '_') + ".json").replace(/\\/g, '/'),
+        execution;
 
       // Remove the string from the end of the path indicating it's a rerun if there's any
       scenario = scenario.replace(/_RETRY_\d+/, '');
@@ -69,9 +69,9 @@ var ScenariosOnWorkerPool = function ScenariosOnWorkerPool(config) {
    * @param scenario The 'path:line' format location of the scenario that cucumber will execute
    * @param tempReportFile The location of the temporary report file that will be attached to the report of the whole execution
    */
-  function createExecution(scenario, tempReportFile) {
+  function createExecution (scenario, tempReportFile) {
     scenario = path.relative('./', scenario); // on windows cucumber doesn't work well with absolute path (reads all scenarios)
-    return exec(command + " --format json:" + tempReportFile + " " + scenario, { maxBuffer: 1024 * 1000 }, function (err) {
+    return exec(command + " --format json:" + tempReportFile + " " + scenario, {maxBuffer: 1024 * 1000}, function (err) {
       if (err) {
         testResults[scenario] = false;
         failedTests++;
@@ -108,25 +108,25 @@ var ScenariosOnWorkerPool = function ScenariosOnWorkerPool(config) {
    * Creates an empty report file for the final report, and sets environment variables listed in config.environment if
    * there is any.
    */
-  function initialize() {
+  function initialize () {
     startTime = new Date();
     return helper.getScenarios(tagsToGet, config.weightingTags, config.featuresPaths).then(function (scens) {
       arrayOfScenarioPaths = scens;
       helper.setEnvironmentVariables(config.environment);
       reportCreator.init(REPORT_FILE);
-    });
+    })
   }
 
   /**
    * Prints the summary to the console, and exits reflecting the outcome of the test execution.
    */
-  function result() {
+  function result () {
     reportCreator.finalizeReport();
     var overallSuccess = 0,
-        failedAfterRetry = 0,
-        executionDuration = new Date() - startTime,
-        min = Math.floor(executionDuration / 1000 / 60),
-        sec = Math.floor((executionDuration / 1000).toFixed(2) - min * 60);
+      failedAfterRetry = 0,
+      executionDuration = new Date() - startTime,
+      min = Math.floor(executionDuration / 1000 / 60),
+      sec = Math.floor((executionDuration / 1000).toFixed(2) - min * 60);
 
     console.log('All tests:                 ' + allTests);
     console.log('Passed tests:              ' + passedTests);
@@ -136,15 +136,15 @@ var ScenariosOnWorkerPool = function ScenariosOnWorkerPool(config) {
       if (!testResults[scenario]) {
         overallSuccess = 1;
         failedAfterRetry++;
-        console.log(scenario + ' has failed');
+        console.log(scenario + ' has failed')
       }
     });
     console.log('Failed tests (retry):      ' + failedAfterRetry);
     console.info("Execution time (" + executionDuration + "ms):   " + min + "m " + sec + "s");
     if (config.exit) {
-      process.exit(overallSuccess);
+      process.exit(overallSuccess)
     } else {
-      return overallSuccess;
+      return overallSuccess
     }
   }
 
@@ -159,8 +159,9 @@ var ScenariosOnWorkerPool = function ScenariosOnWorkerPool(config) {
       } else {
         return processScenarios();
       }
-    });
+    })
   };
+
 };
 
 module.exports = ScenariosOnWorkerPool;

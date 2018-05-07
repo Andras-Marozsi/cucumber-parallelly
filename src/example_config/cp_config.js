@@ -1,7 +1,7 @@
-"use strict";
-
-var date = new Date(),
-    timeStamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "_" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds();
+var
+  date = new Date(),
+  timeStamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "_" + date.getHours()
+    + "-" + date.getMinutes() + "-" + date.getSeconds();
 
 module.exports = {
   name: "Basic configuration for cucumber-parallelly",
@@ -21,7 +21,10 @@ module.exports = {
   silent: false,
   tags: [],
   cucumberPath: "node_modules/cucumber/bin/cucumber.js",
-  cucumberOpts: "--require features/step_definitions " + "--require features/support/env.js " + "--require features/support/world.js " + "--require features/support/hooks.js ",
+  cucumberOpts: "--require features/step_definitions " +
+  "--require features/support/env.js " +
+  "--require features/support/world.js " +
+  "--require features/support/hooks.js ",
   environment: {
     SELENIUM_SERVER: "http://localhost:4444/wd/hub",
     ENVIRONMENT: "integration",

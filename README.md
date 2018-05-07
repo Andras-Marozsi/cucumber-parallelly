@@ -6,7 +6,7 @@
 
 ### Setup
 
-cucumber-parallelly is available as an npm module called cucumber-parallelly.
+cucumber-parallelly is available as an npm module, it allows you to run cucumber in a parallel fashion. You need to have cucumber installed as well.
 
 cucumber-parallelly should be added to your test codebase as a dev dependency.  You can do this with:
 
@@ -32,7 +32,7 @@ $ npm install --dev
 
 ### Run
 
-cucumber-parallelly can be ran from a terminal as follows:
+cucumber-parallelly can be run from a terminal as follows:
 
 ``` shell
 $ node node_modules/cucumber-parallelly/lib/cucumber-parallelly

@@ -57,13 +57,17 @@ describe('lib/cucumber-parallelly/helper.js', function () {
 
   describe('getScenarios', function () {
     it("should not return scenarios if features path does not contain features", function () {
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./lib']), []);
+      return helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./lib']).then(function (resp) {
+        assert.deepEqual(resp, []);
+      })
     })
     it("should return all scenarios from a specific feature path", function () {
       var expectedArray = [
         path.join(path.resolve('./test/features'), 'example3.feature:11')
       ]
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./test/features']), expectedArray);
+      return helper.getScenarios({tags: []}, {pattern: '', default: 1}, ['./test/features']).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     })
     it("should return all scenarios for empty array of tags", function () {
       var expectedArray = [
@@ -78,7 +82,9 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), 'example2.feature:12'),
         path.join(path.resolve('./features'), 'example2.feature:15')
       ];
-      assert.deepEqual(helper.getScenarios({tags: []}, {pattern: '', default: 1}), expectedArray);
+      return helper.getScenarios({tags: []}, {pattern: '', default: 1}).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     });
     it("should return all scenarios for tag '@all'", function () {
       var expectedArray = [
@@ -93,7 +99,9 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), '/example2.feature:12'),
         path.join(path.resolve('./features'), '/example2.feature:15')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@all']}, {pattern: '', default: 1}), expectedArray);
+      return helper.getScenarios({tags: ['@all']}, {pattern: '', default: 1}).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     });
     it("should return a subset of scenarios for tag '@evens'", function () {
       var expectedArray = [
@@ -104,30 +112,38 @@ describe('lib/cucumber-parallelly/helper.js', function () {
         path.join(path.resolve('./features'), '/example1.feature:37'),
         path.join(path.resolve('./features'), '/example2.feature:15')
       ];
-      assert.deepEqual(expectedArray, helper.getScenarios({tags: ['@evens']}, {pattern: '', default: 1}));
+      return helper.getScenarios({tags: ['@evens']}, {pattern: '', default: 1}).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     });
     it("should return a subset of scenarios for tag '@scenario2 @acceptance'", function () {
       var expectedArray = [
         path.join(path.resolve('./features'), '/example1.feature:21'),
         path.join(path.resolve('./features'), '/example1.feature:22')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@evens', "@acceptance"]}, {
+      return helper.getScenarios({tags: ['@evens', '@acceptance']}, {
         pattern: '',
         default: 1
-      }), expectedArray);
+      }).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     });
     it("should return a subset of scenarios for tag '@scenario2 ~@regression'", function () {
       var expectedArray = [
         path.join(path.resolve('./features'), '/example1.feature:21'),
         path.join(path.resolve('./features'), '/example1.feature:22')
       ];
-      assert.deepEqual(helper.getScenarios({tags: ['@scenario2', "~@regression"]}, {
+      return helper.getScenarios({tags: ['@scenario2', "~@regression"]}, {
         pattern: '',
         default: 1
-      }), expectedArray);
+      }).then(function (resp) {
+        assert.deepEqual(resp, expectedArray);
+      })
     });
     it("should return no scenarios for tag 'all'", function () {
-      assert.deepEqual(helper.getScenarios({tags: ['all']}, {pattern: '', default: 1}), []);
+      return helper.getScenarios({tags: ['all']}, {pattern: '', default: 1}).then(function (resp) {
+        assert.deepEqual(resp, []);
+      })
     });
   });
 
