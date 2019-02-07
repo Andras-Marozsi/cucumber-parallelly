@@ -13,51 +13,51 @@
  *   config.environment {Object} Key-value pair of environment variables to set, by default empty
  * @constructor
  */
-var ScenariosOnWorkerPool = function (config) {
-
-  var
-    maxWorkerCount = (config.threads == undefined) ? 5 : config.threads,
-    maxRetryCount = (config.retries == undefined) ? 0 : config.retries,
-    hideOutput = (config.silent == undefined) ? false : config.silent,
-    exec = require('child_process').exec,
-    fs = require('fs'),
-    REPORT_FILE = config.reportPath || './reports/report.json',
-    TEMP_REPORT_PATH = config.tempReportPath || './reports/tmp/',
-    RETRY_STR = '_RETRY_',
-    activeWorkers = 0,
-    allTests = 0,
-    failedTests = 0,
-    passedTests = 0,
-    tagsToGet = {tags: config.tags || []},
-    arrayOfScenarioPaths = [],
-    testResults = {},
-    startTime,
-    helper = require('./helper.js'),
-    path = require('path'),
-    reportCreator = require('./report_creator.js'),
-    command = "node " + config.cucumberPath + " " + config.cucumberOpts;
+const ScenariosOnWorkerPool = function (config) {
+  const maxWorkerCount = (config.threads === undefined) ? 5 : config.threads
+  const maxRetryCount = (config.retries === undefined) ? 0 : config.retries
+  const hideOutput = (config.silent === undefined) ? false : config.silent
+  const exec = require('child_process').exec
+  const REPORT_FILE = config.reportPath || './reports/report.json'
+  const TEMP_REPORT_PATH = config.tempReportPath || './reports/tmp/'
+  const RETRY_STR = '_RETRY_'
+  let activeWorkers = 0
+  let allTests = 0
+  let failedTests = 0
+  let passedTests = 0
+  let tagsToGet = { tags: config.tags || [] }
+  let arrayOfScenarioPaths = []
+  let testResults = {}
+  let startTime
+  const helper = require('./helper.js')
+  const path = require('path')
+  const reportCreator = require('./report_creator.js')
+  let command = "node " + config.cucumberPath + " " + config.cucumberOpts
 
   /**
    * Starts to create threads to execute the scenarios. Every scenario runs in its own thread.
    */
   function processScenarios () {
     while (activeWorkers < maxWorkerCount && arrayOfScenarioPaths.length > 0) {
-      var
-        scenario = arrayOfScenarioPaths.shift(),
-        tempReportFile = (TEMP_REPORT_PATH + scenario.replace(/.*\/features\//, '').replace(/:/g, '_').replace('.', '_') + ".json").replace(/\\/g, '/'),
-        execution;
+      let scenario = arrayOfScenarioPaths.shift()
+      let tempReportFile = (TEMP_REPORT_PATH + scenario
+        .replace(/.*\/features\//, '')
+        .replace(/:/g, '_')
+        .replace('.', '_') + ".json")
+        .replace(/\\/g, '/')
+      let execution
 
       // Remove the string from the end of the path indicating it's a rerun if there's any
-      scenario = scenario.replace(/_RETRY_\d+/, '');
-      helper.createFolderStructure(tempReportFile);
+      scenario = scenario.replace(/_RETRY_\d+/, '')
+      helper.createFolderStructure(tempReportFile)
 
-      activeWorkers++;
-      allTests++;
+      activeWorkers++
+      allTests++
 
-      execution = createExecution(scenario, tempReportFile);
+      execution = createExecution(scenario, tempReportFile)
       if (!hideOutput) {
-        execution.stdout.pipe(process.stdout);
-        execution.stderr.pipe(process.stderr);
+        execution.stdout.pipe(process.stdout)
+        execution.stderr.pipe(process.stderr)
       }
     }
   }
@@ -70,38 +70,38 @@ var ScenariosOnWorkerPool = function (config) {
    * @param tempReportFile The location of the temporary report file that will be attached to the report of the whole execution
    */
   function createExecution (scenario, tempReportFile) {
-    scenario = path.relative('./', scenario); // on windows cucumber doesn't work well with absolute path (reads all scenarios)
-    return exec(command + " --format json:" + tempReportFile + " " + scenario, {maxBuffer: 1024 * 1000}, function (err) {
+    scenario = path.relative('./', scenario) // on windows cucumber doesn't work well with absolute path (reads all scenarios)
+    return exec(command + " --format json:" + tempReportFile + " " + scenario, { maxBuffer: 1024 * 1000 }, function (err) {
       if (err) {
-        testResults[scenario] = false;
-        failedTests++;
+        testResults[scenario] = false
+        failedTests++
         // If retry is enabled and the execution was the first one for the scenario
-        if (tempReportFile.indexOf(RETRY_STR) == -1 && maxRetryCount > 0) {
-          arrayOfScenarioPaths.push(scenario + RETRY_STR + 1);
+        if (tempReportFile.indexOf(RETRY_STR) === -1 && maxRetryCount > 0) {
+          arrayOfScenarioPaths.push(scenario + RETRY_STR + 1)
           // If the maximum retries were not exceeded yet for the scenario
-        } else if (tempReportFile.indexOf(RETRY_STR) != -1 && helper.getRetryCountFromPath(tempReportFile) < maxRetryCount) {
-          var count = helper.getRetryCountFromPath(tempReportFile) + 1;
-          arrayOfScenarioPaths.push(scenario + RETRY_STR + count);
+        } else if (tempReportFile.indexOf(RETRY_STR) !== -1 && helper.getRetryCountFromPath(tempReportFile) < maxRetryCount) {
+          let count = helper.getRetryCountFromPath(tempReportFile) + 1
+          arrayOfScenarioPaths.push(scenario + RETRY_STR + count)
         }
       } else {
         // If it had undefined step then mark the scenario as failed, otherwise it passed
         if (helper.hadUndefinedStep(tempReportFile)) {
-          testResults[scenario] = false;
-          failedTests++;
+          testResults[scenario] = false
+          failedTests++
         } else {
-          testResults[scenario] = true;
-          passedTests++;
+          testResults[scenario] = true
+          passedTests++
         }
       }
-      activeWorkers--;
-      reportCreator.extendReport(tempReportFile);
+      activeWorkers--
+      reportCreator.extendReport(tempReportFile)
       // If there are more tests to execute, or there are other active threads, call the parent function, otherwise finish
       if (arrayOfScenarioPaths.length === 0 && activeWorkers === 0) {
-        return result();
+        return result()
       } else {
-        return processScenarios();
+        return processScenarios()
       }
-    });
+    })
   }
 
   /**
@@ -109,11 +109,11 @@ var ScenariosOnWorkerPool = function (config) {
    * there is any.
    */
   function initialize () {
-    startTime = new Date();
+    startTime = new Date()
     return helper.getScenarios(tagsToGet, config.weightingTags, config.featuresPaths).then(function (scens) {
-      arrayOfScenarioPaths = scens;
-      helper.setEnvironmentVariables(config.environment);
-      reportCreator.init(REPORT_FILE);
+      arrayOfScenarioPaths = scens
+      helper.setEnvironmentVariables(config.environment)
+      reportCreator.init(REPORT_FILE)
     })
   }
 
@@ -121,26 +121,26 @@ var ScenariosOnWorkerPool = function (config) {
    * Prints the summary to the console, and exits reflecting the outcome of the test execution.
    */
   function result () {
-    reportCreator.finalizeReport();
-    var overallSuccess = 0,
-      failedAfterRetry = 0,
-      executionDuration = new Date() - startTime,
-      min = Math.floor(executionDuration / 1000 / 60),
-      sec = Math.floor((executionDuration / 1000).toFixed(2) - min * 60);
+    reportCreator.finalizeReport()
+    let overallSuccess = 0
+    let failedAfterRetry = 0
+    let executionDuration = new Date() - startTime
+    let min = Math.floor(executionDuration / 1000 / 60)
+    let sec = Math.floor((executionDuration / 1000).toFixed(2) - min * 60)
 
-    console.log('All tests:                 ' + allTests);
-    console.log('Passed tests:              ' + passedTests);
-    console.log('Failed tests:              ' + failedTests);
+    console.log('All tests:                 ' + allTests)
+    console.log('Passed tests:              ' + passedTests)
+    console.log('Failed tests:              ' + failedTests)
 
     Object.keys(testResults).forEach(function (scenario) {
       if (!testResults[scenario]) {
-        overallSuccess = 1;
-        failedAfterRetry++;
+        overallSuccess = 1
+        failedAfterRetry++
         console.log(scenario + ' has failed')
       }
-    });
-    console.log('Failed tests (retry):      ' + failedAfterRetry);
-    console.info("Execution time (" + executionDuration + "ms):   " + min + "m " + sec + "s");
+    })
+    console.log('Failed tests (retry):      ' + failedAfterRetry)
+    console.info("Execution time (" + executionDuration + "ms):   " + min + "m " + sec + "s")
     if (config.exit) {
       process.exit(overallSuccess)
     } else {
@@ -154,14 +154,14 @@ var ScenariosOnWorkerPool = function (config) {
    */
   this.execute = function () {
     return initialize().then(function () {
-      if (arrayOfScenarioPaths.length == 0) {
-        return result();
+      if (arrayOfScenarioPaths.length === 0) {
+        return result()
       } else {
-        return processScenarios();
+        return processScenarios()
       }
     })
-  };
+  }
 
-};
+}
 
-module.exports = ScenariosOnWorkerPool;
+module.exports = ScenariosOnWorkerPool

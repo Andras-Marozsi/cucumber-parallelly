@@ -1,13 +1,10 @@
-"use strict";
+const fs = require('fs')
+const pathHelper = require('path')
+const pathSeparator = pathHelper.sep
 
-var
-  fs = require('fs'),
-  pathHelper = require('path'),
-  pathSeparator = pathHelper.sep;
-
-const { PickleFilter, getTestCasesFromFilesystem } = require('cucumber');
-const { EventEmitter } = require('events');
-const eventBroadcaster = new EventEmitter();
+const { PickleFilter, getTestCasesFromFilesystem } = require('cucumber')
+const { EventEmitter } = require('events')
+const eventBroadcaster = new EventEmitter()
 
 /**
  * Helper class containing some util functions
@@ -28,23 +25,23 @@ class Helper {
    * @param completePath The complete path of the file (can be just the folder structure as well)
    */
   static createFolderStructure (completePath) {
-    var path = '';
-    completePath = pathHelper.normalize(completePath);
+    let path = ''
+    completePath = pathHelper.normalize(completePath)
     completePath.split(pathSeparator).map(function (folder) {
-      if (folder == '.') {
-        path += folder + pathSeparator;
-      } else if (folder.indexOf('.') == -1) {
-        path += folder + pathSeparator;
+      if (folder === '.') {
+        path += folder + pathSeparator
+      } else if (folder.indexOf('.') === -1) {
+        path += folder + pathSeparator
         try {
           if (!fs.existsSync(path)) {
-            fs.mkdirSync(path);
+            fs.mkdirSync(path)
           }
         } catch (ex) {
-          console.error("There was an exception during the creation of the '" + path + "' folder: " + ex);
+          console.error("There was an exception during the creation of the '" + path + "' folder: " + ex)
         }
       }
-    });
-  };
+    })
+  }
 
   /**
    * Based on the report returns true if the scenario had undefined step(s), or returns false otherwise
@@ -52,39 +49,38 @@ class Helper {
    * @returns {boolean} True if there were undefined steps, false otherwise
    */
   static hadUndefinedStep (pathToReport) {
-    var actualReport = JSON.parse(fs.readFileSync(pathToReport, 'utf8'))[0],
-      hasUndefinedStep = false;
+    let actualReport = JSON.parse(fs.readFileSync(pathToReport, 'utf8'))[0]
+    let hasUndefinedStep = false
 
     if (actualReport && actualReport.elements && actualReport.elements[0]) {
       actualReport.elements[0].steps.map(function (step) {
-        hasUndefinedStep = (step.result.status == 'undefined') ? true : hasUndefinedStep;
-      });
+        hasUndefinedStep = (step.result.status === 'undefined') ? true : hasUndefinedStep
+      })
     }
 
-    return hasUndefinedStep;
-  };
+    return hasUndefinedStep
+  }
 
   /**
    * Collects all scenarios to 'arrayOfScenarioPaths' variable, sorted by some special tags if they were provided
    */
   static getScenarios (tagsToGet, weightingTags, fPaths = ['./features']) {
-    var
-      allScenarios = [],
-      sortedScenarios = [],
-      tagExpression = '',
-      featuresPaths = [];
+    let allScenarios = []
+    let sortedScenarios = []
+    let tagExpression = ''
+    let featuresPaths = [];
 
     [].concat(fPaths).map(function (path) {
-      loadFeatureFilesFromDir(path);
-    });
+      loadFeatureFilesFromDir(path)
+    })
 
     function loadFeatureFilesFromDir (path) {
       fs.readdirSync(path).forEach(file => {
         if (fs.lstatSync(pathHelper.resolve(process.cwd(), path, file)).isDirectory()) {
           loadFeatureFilesFromDir(pathHelper.resolve(process.cwd(), path, file))
         } else {
-          if (pathHelper.extname(file) == '.feature') {
-            featuresPaths.push(pathHelper.resolve(process.cwd(), path, file));
+          if (pathHelper.extname(file) === '.feature') {
+            featuresPaths.push(pathHelper.resolve(process.cwd(), path, file))
           }
         }
       })
@@ -92,21 +88,21 @@ class Helper {
 
     if (Array.isArray(tagsToGet.tags)) {
       tagsToGet.tags.map(function (tag, index) {
-        if (index != 0) {
+        if (index !== 0) {
           tagExpression += ' and '
         }
-        if (tag.indexOf('~') == -1 && tag.indexOf(',') == -1) {
-          tagExpression += tag;
-        } else if (tag.indexOf('~') != -1 && tag.indexOf(',') == -1) {
-          tagExpression += "not " + tag.replace('~', '');
-        } else if (tag.indexOf('~') != -1 && tag.indexOf(',') != -1) {
-          tagExpression += "not (" + tag.replace('~', '').replace(/,/g, ' or ') + ")";
-        } else if (tag.indexOf('~') == -1 && tag.indexOf(',') != -1) {
-          tagExpression += "(" + tag.replace(/,/g, ' or ') + ")";
+        if (tag.indexOf('~') === -1 && tag.indexOf(',') === -1) {
+          tagExpression += tag
+        } else if (tag.indexOf('~') !== -1 && tag.indexOf(',') === -1) {
+          tagExpression += "not " + tag.replace('~', '')
+        } else if (tag.indexOf('~') !== -1 && tag.indexOf(',') !== -1) {
+          tagExpression += "not (" + tag.replace('~', '').replace(/,/g, ' or ') + ")"
+        } else if (tag.indexOf('~') === -1 && tag.indexOf(',') !== -1) {
+          tagExpression += "(" + tag.replace(/,/g, ' or ') + ")"
         }
       })
     } else {
-      tagExpression = tagsToGet.tags;
+      tagExpression = tagsToGet.tags
     }
 
     function getFeaturesByTagExpression () {
@@ -114,37 +110,38 @@ class Helper {
         cwd: '',
         eventBroadcaster: eventBroadcaster,
         featurePaths: featuresPaths,
+        order: 'defined',
         pickleFilter: new PickleFilter({
           tagExpression: tagExpression
         })
       }).then(function (results) {
         results.forEach(function (scenario) {
-          allScenarios.push(scenario);
-        });
+          allScenarios.push(scenario)
+        })
 
         // Sort the scenarios by their size (can be defines by tag '@duration_'
         allScenarios.sort(function (scenario1, scenario2) {
           return getScenarioSize(scenario2.pickle) - getScenarioSize(scenario1.pickle)
-        });
+        })
         // Create the array of (sorted) scenarios to execute
         allScenarios.map(function (scenario) {
-          sortedScenarios.push(pathHelper.resolve(scenario.uri + ':' + scenario.pickle.locations[0].line));
-        });
-        return sortedScenarios;
+          sortedScenarios.push(pathHelper.resolve(scenario.uri + ':' + scenario.pickle.locations[0].line))
+        })
+        return sortedScenarios
       }, function (ex) {
-        console.error("Failed to load scenarios: " + ex);
-        return [];
-      });
+        console.error("here Failed to load scenarios: " + ex)
+        return []
+      })
     }
 
     function getScenarioSize (scenario) {
-      var size = weightingTags.default;
+      let size = weightingTags.default
       scenario.tags.forEach(function (tag) {
         if (tag.name.indexOf(weightingTags.pattern) > -1) {
-          size = weightingTags[tag.name.replace(weightingTags.pattern, '')] || size;
+          size = weightingTags[tag.name.replace(weightingTags.pattern, '')] || size
         }
-      });
-      return size;
+      })
+      return size
     }
 
     return getFeaturesByTagExpression()
@@ -155,13 +152,13 @@ class Helper {
    * @param varsToSet {object} Key value pair of environment variables and their values to set.
    */
   static setEnvironmentVariables (varsToSet) {
-    if (varsToSet != undefined) {
+    if (varsToSet !== undefined) {
       Object.keys(varsToSet).map(function (varName) {
-        process.env[varName] = process.env[varName] || varsToSet[varName];
-      });
+        process.env[varName] = process.env[varName] || varsToSet[varName]
+      })
     }
   }
 
 }
 
-module.exports = Helper;
+module.exports = Helper
