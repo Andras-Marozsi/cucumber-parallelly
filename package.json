@@ -23,7 +23,7 @@
   "dependencies": {
     "cucumber": "3.1.0",
     "fs": "0.0.2",
-    "mocha": "^2.4.5",
+    "mocha": "^10.1.0",
     "yargs": "4.2.0"
   },
   "homepage": "https://github.com/Andras-Marozsi/cucumber-parallelly#readme",
