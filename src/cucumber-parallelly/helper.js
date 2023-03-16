@@ -128,14 +128,16 @@ class Helper {
           if (element.gherkinDocument) {
             gherkinDocument = element.gherkinDocument
             gherkinDocument.feature.children.forEach((scenario) => {
-              if (scenario.scenario.examples.length > 0) {
-                scenario.scenario.examples.forEach((example) => {
-                  example.tableBody.forEach(tableRow => {
-                    gherkinDocumentLocations.push(gherkinDocument.uri + ':' + tableRow.location.line)
+              if (scenario.scenario) {
+                if (scenario.scenario.examples.length > 0) {
+                  scenario.scenario.examples.forEach((example) => {
+                    example.tableBody.forEach(tableRow => {
+                      gherkinDocumentLocations.push(gherkinDocument.uri + ':' + tableRow.location.line)
+                    })
                   })
-                })
-              } else {
-                gherkinDocumentLocations.push(gherkinDocument.uri + ':' + scenario.scenario.location.line)
+                } else {
+                  gherkinDocumentLocations.push(gherkinDocument.uri + ':' + scenario.scenario.location.line)
+                }
               }
             })
           } else if (element.pickle && gherkinDocument) {
