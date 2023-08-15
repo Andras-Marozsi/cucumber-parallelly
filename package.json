@@ -21,7 +21,7 @@
     "build": "npx babel src --out-dir lib"
   },
   "dependencies": {
-    "@cucumber/cucumber": "^8.5.1",
+    "@cucumber/cucumber": "^9.4.0",
     "mocha": "^10.2.0",
     "yargs": "^17.7.1"
   },
