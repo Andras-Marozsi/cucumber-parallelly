@@ -1,10 +1,10 @@
 "use strict";
 
-var
-  fs = require('fs'),
-  helper = require('./helper.js'),
-  REPORT_FILE = './reports/report.json',
-  RETRY_STR = '_RETRY_';
+const fs = require('fs')
+const helper = require('./helper.js')
+let REPORT_FILE = './reports/report.json'
+const RETRY_STR = '_RETRY_';
+let finalReport = []
 
 /**
  * Helper class responsible for the report file manipulation
@@ -15,17 +15,18 @@ class ReportCreator {
    * Creates the folder structure for the final report file and initiates the final report.
    * @param reportFile The name (with path) of the final report file
    */
-  static init (reportFile) {
+  static init(reportFile) {
     helper.createFolderStructure(REPORT_FILE);
     REPORT_FILE = reportFile;
-    this.writeReport('[');
+    this.writeReport('');
+    finalReport = []
   }
 
   /**
    * Overwrites the final report file with the provided parameter
    * @param content The content to be written into the file
    */
-  static writeReport (content) {
+  static writeReport(content) {
     try {
       fs.writeFileSync(REPORT_FILE, content);
     } catch (ex) {
@@ -37,9 +38,9 @@ class ReportCreator {
    * Extends the final report with the report got in parameter
    * @param pathToReport Path of the report to add to the final one
    */
-  static extendReport (pathToReport) {
+  static extendReport(pathToReport) {
     var
-      finalReport = JSON.parse(fs.readFileSync(REPORT_FILE, 'utf8') + ']'),
+      // finalReport = JSON.parse(fs.readFileSync(REPORT_FILE, 'utf8') + ']'),
       actualReport = JSON.parse(fs.readFileSync(pathToReport, 'utf8'))[0],
       needToAdd = true;
 
@@ -60,14 +61,14 @@ class ReportCreator {
         finalReport.push(actualReport)
       }
     }
-    this.writeReport(JSON.stringify(finalReport).slice(0, -1))
+    // this.writeReport(JSON.stringify(finalReport).slice(0, -1))
   };
 
   /**
    * Adds the closing parentheses to the report so that it's finished and processable.
    */
-  static finalizeReport () {
-    this.writeReport(fs.readFileSync(REPORT_FILE, 'utf8') + ']')
+  static finalizeReport() {
+    this.writeReport(JSON.stringify(finalReport))
   }
 
 }

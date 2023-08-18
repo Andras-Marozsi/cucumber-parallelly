@@ -74,6 +74,7 @@ var ScenariosOnWorkerPool = function (config) {
     return exec(command + " --format json:" + tempReportFile + " " + scenario, {maxBuffer: 1024 * 1000}, function (err) {
       if (err) {
         testResults[scenario] = false;
+        console.log(`Scenario failed (${scenario})`)
         failedTests++;
         // If retry is enabled and the execution was the first one for the scenario
         if (tempReportFile.indexOf(RETRY_STR) == -1 && maxRetryCount > 0) {
@@ -87,9 +88,11 @@ var ScenariosOnWorkerPool = function (config) {
         // If it had undefined step then mark the scenario as failed, otherwise it passed
         if (helper.hadUndefinedStep(tempReportFile)) {
           testResults[scenario] = false;
+          console.log(`Scenario failed (${scenario})`)
           failedTests++;
         } else {
           testResults[scenario] = true;
+          console.log(`Scenario passed (${scenario})`)
           passedTests++;
         }
       }
